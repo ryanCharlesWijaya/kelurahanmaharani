@@ -19,4 +19,11 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+
+Route::get('/arsip', [App\Http\Controllers\ArsipController::class, 'index'])->name('arsip');
+
+Route::get('/arsip/add', [App\Http\Controllers\ArsipController::class, 'add'])->name('arsipAdd');
+Route::post('/arsip/add', [App\Http\Controllers\ArsipController::class, 'store'])->name('arsipStore');
+
+Route::get('/arsip/edit/{id}', [App\Http\Controllers\ArsipController::class, 'edit']);
