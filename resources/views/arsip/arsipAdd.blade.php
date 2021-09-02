@@ -46,6 +46,54 @@
                         </div>
 
                         <div class="form-group row">
+                            <label for="jenis_dokumen" class="col-md-12 col-form-label text-md-left">{{ __('Jenis Dokumen') }}</label>
+
+                            <div class="col-md-12">
+                                <input id="jenis_dokumen" type="text" list="jenis_jenis_dokumen" class="form-control @error('jenis_dokumen') is-invalid @enderror" name="jenis_dokumen" value="{{ old('jenis_dokumen') }}" required autocomplete="jenis_dokumen" autofocus>
+
+                                <datalist id="jenis_jenis_dokumen">
+                                    @foreach ($jenisJenisDokumen as $jenisDokumen)
+                                        <option class="option-{{ $jenisDokumen['id'] }}">{{ $jenisDokumen['name'] }}</option>
+                                    @endforeach
+                                </datalist>
+
+                                @error('jenis_dokumen')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="kode_dokumen" class="col-md-12 col-form-label text-md-left">{{ __('Kode Dokumen') }}</label>
+
+                            <div class="col-md-12">
+                                <input id="kode_dokumen" type="text" class="form-control @error('kode_dokumen') is-invalid @enderror" name="kode_dokumen" value="{{ old('kode_dokumen') }}" required autocomplete="kode_dokumen" autofocus>
+
+                                @error('kode_dokumen')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="keterangan" class="col-md-12 col-form-label text-md-left">{{ __('Keterangan') }}</label>
+
+                            <div class="col-md-12">
+                                <input id="keterangan" type="text" class="form-control @error('keterangan') is-invalid @enderror" name="keterangan" value="{{ old('keterangan') }}" required autocomplete="keterangan" autofocus>
+
+                                @error('keterangan')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
                             <label for="file" class="col-md-12 col-form-label text-md-left">{{ __('Username') }}</label>
 
                             <div class="col-md-12">

@@ -12,6 +12,21 @@ class Arsip extends Model
     protected $fillable = [
         'user_id',
         'owner_nik',
+        'kode_dokumen',
+        'jenis_dokumen',
+        'keterangan',
         'file_name',
     ];
+
+    public function owner() {
+    	return $this->hasOne(Owner::class, 'nik', 'owner_nik');
+    }
+
+    public function jenisDokumen() {
+        return $this->hasOne(JenisDokumen::class, 'id', 'jenis_dokumen');
+    }
+
+    public function user() {
+    	return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }

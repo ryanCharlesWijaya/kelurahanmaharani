@@ -5,16 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Owner extends Model
+class JenisDokumen extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'nik',
+    	'name'
     ];
 
-    public function arsip() {
-    	return $this->belongsTo(Arsip::class, 'owner_nik', 'nik');
-    }
 }

@@ -17,6 +17,9 @@ class CreateArsipsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('owner_nik');
+            $table->string('kode_dokumen')->unique();
+            $table->string('jenis_dokumen');
+            $table->text('keterangan')->nullable();
             $table->string('file_name');
             $table->timestamps();
 
