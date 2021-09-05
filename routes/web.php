@@ -26,4 +26,6 @@ Route::get('/arsip', [App\Http\Controllers\ArsipController::class, 'index'])->na
 Route::get('/arsip/add', [App\Http\Controllers\ArsipController::class, 'add'])->name('arsipAdd');
 Route::post('/arsip/add', [App\Http\Controllers\ArsipController::class, 'store'])->name('arsipStore');
 
-Route::get('/arsip/edit/{id}', [App\Http\Controllers\ArsipController::class, 'edit']);
+Route::get('/arsip/edit/{id}', [App\Http\Controllers\ArsipController::class, 'edit'])->name('arsipEdit');
+Route::post('/arsip/edit/{id}', [App\Http\Controllers\ArsipController::class, 'updateArsipData'])->name('arsipUpdate');
+

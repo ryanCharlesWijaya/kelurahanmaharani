@@ -16,13 +16,14 @@
 
                         <thead>
                             <tr>
-                                <th scope="col">Kode Dokumen</th>
-                                <th scope="col">Nik Pemilik</th>
-                                <th scope="col">Pemilik</th>
-                                <th scope="col">Jenis Dokumen</th>
-                                <th scope="col">Keterangan</th>
-                                <th scope="col">Admin</th>
-                                <th scope="col">Tanggal Dibuat</th>
+                                @foreach ($table_header as $header)
+                                <th scope="col" onclick="window.location='{{ '?sortBy='.$header['attribute'].'&sortByOrder='.$header['orderBy'] }}'">
+                                    {{ $header['name'] }}
+                                </th>
+                                @endforeach
+                                
+                                
+                                <th scope="col">Aksi</th>
                             </tr>
                         </thead>
                         
@@ -31,12 +32,17 @@
                         @foreach ($arsips as $arsip)
                             <tr>
                                 <td>{{ $arsip->kode_dokumen }}</td>
-                                <td>{{ $arsip->owner->nik }}</td>
-                                <td>{{ $arsip->owner->name }}</td>
-                                <td>{{ $arsip->jenisDokumen->name }}</td>
+                                <td>{{ $arsip->owner_nik }}</td>
+                                <td>{{ $arsip->owner_name }}</td>
+                                <td>{{ $arsip->jenis_dokumen_name }}</td>
                                 <td>{{ $arsip->keterangan }}</td>
-                                <td>{{ $arsip->user->name }}</td>
+                                <td>{{ $arsip->user_name }}</td>
                                 <td>{{ $arsip->created_at }}</td>
+                                <td>
+                                    <a href="{{ route('arsipEdit', ['id' => $arsip->id]) }}"  class="btn btn-success mb-3">
+                                        Edit
+                                    </a>
+                                </td>
                             </tr>
                         @endforeach
 
@@ -45,8 +51,6 @@
                     </table>
 
                     {{ $arsips->links('pagination::bootstrap-4') }}
-
-                    {{ __('You are logged in!') }}
                 </div>
             </div>
         </div>
