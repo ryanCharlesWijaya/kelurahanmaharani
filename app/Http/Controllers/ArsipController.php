@@ -64,6 +64,12 @@ class ArsipController extends Controller
         ]);
     }
 
+    public function deleteArsipData($id) {
+        Arsip::where('id', $id)->delete();
+
+        return redirect('arsip');
+    }
+
     public function index() {
         $arsips = DB::table('arsips')
                     ->join('owners', 'arsips.owner_nik', 'owners.nik')

@@ -8,7 +8,7 @@
                 <div class="card-header">{{ __('Arsip') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('arsipUpdate', ['id' => 1]) }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('arsipUpdate', ['id' => $arsip->id]) }}" enctype="multipart/form-data">
                         @csrf
 
                         <div class="form-group row">

@@ -1,7 +1,7 @@
 @extends('layouts.nav')
 
 @section('container')
-<style>
+    <style>
         @media screen and (max-width:1366px) {
             #container{
                 max-width: 80%;

@@ -34,6 +34,16 @@ class User extends Authenticatable
     ];
 
     /**
+     * The attributes that should be visible for arrays.
+     *
+     * @var array
+     */
+    protected $visible = [
+        'name',
+        'username'
+    ];
+
+    /**
      * The attributes that should be cast to native types.
      *
      * @var array
