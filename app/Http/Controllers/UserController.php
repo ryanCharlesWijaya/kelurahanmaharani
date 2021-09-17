@@ -63,7 +63,7 @@ class UserController extends Controller {
         return $collection;
     }    
 
-    public function add() {
+    public function create() {
         return view('user/userAdd');
     }
 
@@ -77,14 +77,10 @@ class UserController extends Controller {
         ]);
     }
 
-    public function updateUserPassword(Request $request, $id) {
+    public function updatePassword(Request $request, $id) {
     	$this->validateUserPassword($request->all());
 
-    	$user = $this->getUserInstanceFromId($id);
-
-        $user->password = Hash::make($request->password);
-
-        $user->save();
+        $this->updateUserPasswordOnDb($request->all(), $id);
 
     	return redirect('user');
     }
@@ -95,23 +91,36 @@ class UserController extends Controller {
         ]);
     }
 
-    public function updateUserProfile(Request $request, $id) {
-        $this->validateUserProfile($request->all());
-
+    public function updateUserPasswordOnDb($data, $id) {
         $user = $this->getUserInstanceFromId($id);
 
-        $user->name = $request->name;
-        $user->username = $request->username;
-        $user->save();
+        $user->password = Hash::make($data['password']);
+
+        return $user->save();
+    }
+
+    public function updateInfo(Request $request, $id) {
+        $this->validateUserInfo($request->all());
+
+        $this->updateUserInfoOnDb($request->all(), $id);
 
         return redirect('user');
     }
 
-    public function validateUserProfile($data) {
+    public function validateUserInfo($data) {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255'],
         ]);
+    }
+
+    public function updateUserInfoOnDb($data, $id) {
+        $user = $this->getUserInstanceFromId($id);
+
+        $user->name = $data['name'];
+        $user->username = $data['username'];
+        
+        return $user->save();
     }
 
     public function getUserInstanceFromId($id) {
@@ -119,7 +128,7 @@ class UserController extends Controller {
     }
 
 
-    public function deleteUser(Request $request, $id) {
+    public function delete(Request $request, $id) {
         $this->getUserInstanceFromId($id)->delete();
 
         if(Auth::id() == $id) { return redirect('login'); }

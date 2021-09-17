@@ -14,30 +14,38 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('landing2');
 });
 
 Auth::routes();
 
+Route::get('/home', function() {
+	return redirect('landing2');
+})->name('home');
+
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/arsip', [App\Http\Controllers\ArsipController::class, 'index'])->name('arsip');
+Route::name('arsip.')->group(function () {
+    Route::get('/arsip', [App\Http\Controllers\ArsipController::class, 'index'])->name('index');
 
-Route::get('/arsip/add', [App\Http\Controllers\ArsipController::class, 'add'])->name('arsipAdd');
+    Route::get('/arsip/create', [App\Http\Controllers\ArsipController::class, 'create'])->name('create');
+	Route::post('/arsip', [App\Http\Controllers\ArsipController::class, 'store'])->name('store');
 
-Route::get('/arsip/edit/{id}', [App\Http\Controllers\ArsipController::class, 'edit'])->name('arsipEdit');
-Route::post('/arsip/edit/{id}', [App\Http\Controllers\ArsipController::class, 'updateArsipData'])->name('arsipUpdate');
+	Route::get('/arsip/{id}/edit', [App\Http\Controllers\ArsipController::class, 'edit'])->name('edit');
+	Route::post('/arsip/info/{id}', [App\Http\Controllers\ArsipController::class, 'updateInfo'])->name('updateInfo');
+	Route::post('/arsip/file/{id}', [App\Http\Controllers\ArsipController::class, 'updateFile'])->name('updateFile');
 
-Route::post('/arsip/delete/{id}', [App\Http\Controllers\ArsipController::class, 'deleteArsipData'])->name('arsipDelete');
+	Route::post('/arsip/delete/{id}', [App\Http\Controllers\ArsipController::class, 'delete'])->name('delete');
+});
 
+Route::name('user.')->group(function () {
+    Route::get('/user/', [App\Http\Controllers\UserController::class, 'index'])->name('index');
 
-Route::get('/user', [App\Http\Controllers\UserController::class, 'index'])->name('user');
+    Route::get('/user/create', [App\Http\Controllers\UserController::class, 'create'])->name('create');
 
-
-Route::get('/user/add', [App\Http\Controllers\UserController::class, 'add'])->name('userAdd');
-
-Route::get('/user/edit/{id}', [App\Http\Controllers\UserController::class, 'edit'])->name('userEdit');
-Route::post('/user/edit/profile/{id}', [App\Http\Controllers\UserController::class, 'updateUserProfile'])->name('updateUserProfile');
-Route::post('/user/edit/password/{id}', [App\Http\Controllers\UserController::class, 'updateUserPassword'])->name('updateUserPassword');
-
-Route::post('/user/delete/{id}', [App\Http\Controllers\UserController::class, 'deleteUser'])->name('userDelete');
+	Route::get('/user/{id}/edit', [App\Http\Controllers\UserController::class, 'edit'])->name('edit');
+	Route::post('/user/info/{id}', [App\Http\Controllers\UserController::class, 'updateInfo'])->name('updateInfo');
+	Route::post('/user/password/{id}', [App\Http\Controllers\UserController::class, 'updatePassword'])->name('updatePassword');
+	
+	Route::post('/user/delete/{id}', [App\Http\Controllers\UserController::class, 'delete'])->name('delete');
+});

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container" style="width: 20%;margin-top:5%;">
-<form class="form-signin" method="POST" action="{{ route('updateUserProfile', ['id' => $user->id]) }}">
+<form class="form-signin" method="POST" action="{{ route('user.updateInfo', ['id' => $user->id]) }}">
       @csrf
       <div class="text-center mb-4">
         <img class="mb-4" src="image/pekanbaru.png" alt="logo pekanbaru" width="72">
@@ -30,7 +30,7 @@
       <p class="mt-5 mb-3 text-muted text-center">Kelurahan Maharani &copy; 2021</p>
 </form>
 
-<form class="form-signin" method="POST" action="{{ route('updateUserPassword', ['id' => $user->id]) }}">
+<form class="form-signin" method="POST" action="{{ route('user.updatePassword', ['id' => $user->id]) }}">
     @csrf
     <div class="form-label-group">
         <label for="password">Password</label>

@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB;  
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\JenisDokumenController;
 use App\Models\Arsip;
@@ -26,51 +27,11 @@ class ArsipController extends Controller
 
     public function __construct() {
         $this->middleware('auth');
-        $this->assigningUrlForTableHeader();
-    }
-
-    protected function assigningUrlForTableHeader() {
-        foreach ($this->tableHeaderArray as $key => $value) {
-            $isSortByIsBeingUsed = (isset($_GET['sortBy']) && $_GET['sortBy'] == $value); 
-            $sortByOrder = (isset($_GET['sortByOrder']) && $isSortByIsBeingUsed && $_GET['sortByOrder'] == 'desc') ? 'asc' : 'desc'; 
-
-            $this->tableHeaderArray[$key] = [
-                'name' => $key,
-                'attribute' => $value,
-                'orderBy' => $sortByOrder
-            ];
-        }
-    }
-
-    public function add() {
-        $owners = Owner::all();
-        $jenisJenisDokumen = JenisDokumen::all();
-
-        return view('arsip/arsipAdd', [
-            "owners" => $owners,
-            "jenisJenisDokumen" => $jenisJenisDokumen
-        ]);
-    }
-
-    public function edit($id) {
-        $arsip = Arsip::find($id);
-        $owners = Owner::all();
-        $jenisJenisDokumen = JenisDokumen::all();
-
-        return view('arsip/arsipEdit', [
-            "arsip" => $arsip,
-            "owners" => $owners,
-            "jenisJenisDokumen" => $jenisJenisDokumen
-        ]);
-    }
-
-    public function deleteArsipData($id) {
-        Arsip::where('id', $id)->delete();
-
-        return redirect('arsip');
     }
 
     public function index() {
+        $this->assigningUrlForTableHeader();
+
         $arsips = DB::table('arsips')
                     ->join('owners', 'arsips.owner_nik', 'owners.nik')
                     ->join('jenis_dokumens', 'arsips.jenis_dokumen', 'jenis_dokumens.id')
@@ -87,36 +48,64 @@ class ArsipController extends Controller
         ]);
     }
 
-    public function updateArsipData(Request $request, $id) {
-        try {
-            $isFileExists = !empty($request->file('file'));
+    protected function assigningUrlForTableHeader() {
+        foreach ($this->tableHeaderArray as $key => $value) {
+            $isSortByIsBeingUsed = (isset($_GET['sortBy']) && $_GET['sortBy'] == $value); 
+            $sortByOrder = (isset($_GET['sortByOrder']) && $isSortByIsBeingUsed && $_GET['sortByOrder'] == 'desc') ? 'asc' : 'desc'; 
 
-            if ($isFileExists) {
-                $uploadFilePath = $this->uploadFile($request);
-                $request['file_name'] = $uploadFilePath;
-            }
-
-            $JenisDokumenController = new JenisDokumenController;
-            $jenisDokumen = $JenisDokumenController->storeByArray([
-                "jenis_dokumen" => $request['jenis_dokumen']
-            ]);
-
-            $request['jenis_dokumen'] = $jenisDokumen->id;
-            $request['user_id'] = Auth::id();
-
-            $this->updateValidator($request->all())->validate();
-
-            $this->update($request->all(), $id);
-
-            return redirect('arsip');
-        } catch (Exception $e) {
-            dd($e);
+            $this->tableHeaderArray[$key] = [
+                'name' => $key,
+                'attribute' => $value,
+                'orderBy' => $sortByOrder
+            ];
         }
     }
 
-	public function store(Request $request) {
-		try {
-			$uploadFilePath = $this->uploadFile($request);
+    protected function filterArsipsFromGetVariable($collection) {
+        $isFromDataExists = isset($_GET['fromDate']);
+        $isUntilDataExists = isset($_GET['untilDate']);
+
+        if ($isFromDataExists && $isUntilDataExists) {
+            $collection->whereBetween("arsips.created_at", [$_GET['fromDate']." 00:00:00", $_GET['untilDate']." 23:59:59"]);
+        }
+
+        $isSearchQueryExists = isset($_GET['query']);
+        if($isSearchQueryExists) {
+            $collection->where(function($query) {
+                $searchQuery = '%'.$_GET['query']."%";
+
+                $query->where('arsips.kode_dokumen', 'like', $searchQuery)
+                        ->orWhere('jenis_dokumens.name', 'like', $searchQuery)
+                        ->orWhere('owners.name', 'like', $searchQuery)
+                        ->orWhere('owners.nik', 'like', $searchQuery)
+                        ->orwhere('owners.name', 'like', $searchQuery);
+            });
+        }
+
+        $sortBy = isset($_GET['sortBy']) ? $_GET['sortBy'] : 'id';
+        $sortByOrder = isset($_GET['sortByOrder']) ? $_GET['sortByOrder'] : 'desc';
+        $collection->orderBy($sortBy, $sortByOrder);
+
+        return $collection;
+    }
+
+    protected function paginate($collection) {
+        return $collection->paginate(1);
+    }
+
+    public function create() {
+        $owners = Owner::all();
+        $jenisJenisDokumen = JenisDokumen::all();
+
+        return view('arsip/arsipAdd', [
+            "owners" => $owners,
+            "jenisJenisDokumen" => $jenisJenisDokumen
+        ]);
+    }
+
+    public function store(Request $request) {
+        try {
+            $uploadFilePath = $this->uploadFile($request);
             $OwnerController = new OwnerController;
             $JenisDokumenController = new JenisDokumenController;
 
@@ -133,25 +122,25 @@ class ArsipController extends Controller
             $request['file_name'] = $uploadFilePath;
             $request['user_id'] = Auth::id();
 
-	        $this->createValidator($request->all())->validate();
+            $this->ArsipValidator($request->all());
 
-            $this->create($request->all());
+            $this->storeToDb($request->all());
 
             return redirect('arsip');
-		} catch (Exception $e) {
+        } catch (Exception $e) {
             dd($e);
-		}
-	}
+        }
+    }
 
-	protected function uploadFile($request) {
-		$isUploaded = $request->file('file')->store('docs');
+    protected function uploadFile($request) {
+        $isUploaded = $request->file('file')->store('docs');
 
-		if (empty($isUploaded)) throw new Exception("Error Uploading File", 1);
+        if (empty($isUploaded)) throw new Exception("Error Uploading File", 1);
 
-		return $isUploaded;
-	}
+        return $isUploaded;
+    }
 
-	protected function createValidator(array $data) {
+    protected function ArsipValidator(array $data) {
         return Validator::make($data, [
             'user_id' => ['required', 'max:255'],
             'nik' => ['required', 'string', 'max:255'],
@@ -162,15 +151,7 @@ class ArsipController extends Controller
         ]);
     }
 
-    protected function updateValidator(array $data) {
-        return Validator::make($data, [
-            'jenis_dokumen' => ['required', 'int'],
-            'kode_dokumen' => ['required', 'string', 'max:255'],
-            'keterangan' => ['string', 'max:1000'],
-        ]);
-    }
-
-    protected function create(array $data) {
+    protected function storeToDb(array $data) {
         return Arsip::create([
             'user_id' => $data['user_id'],
             'owner_nik' => $data['nik'],
@@ -181,11 +162,48 @@ class ArsipController extends Controller
         ]);
     }
 
-    protected function update(array $data, $id) {
-        $arsip = $this->fetchArsipInstanceById($id);
+    public function edit($id) {
+        $arsip = Arsip::find($id);
+        $owners = Owner::all();
+        $jenisJenisDokumen = JenisDokumen::all();
 
-        $isFileExists = !empty($data['file_name']);
-        if ($isFileExists) $arsip->file_name = $data['file_name'];
+        return view('arsip/arsipEdit', [
+            "arsip" => $arsip,
+            "owners" => $owners,
+            "jenisJenisDokumen" => $jenisJenisDokumen
+        ]);
+    }
+
+    public function updateInfo(Request $request, $id) {
+        try {
+            $JenisDokumenController = new JenisDokumenController;
+            $jenisDokumen = $JenisDokumenController->storeByArray([
+                "jenis_dokumen" => $request['jenis_dokumen']
+            ]);
+
+            $request['jenis_dokumen'] = $jenisDokumen->id;
+            $request['user_id'] = Auth::id();
+
+            $this->validateArsipInfo($request->all());
+
+            $this->updateArsipInfoOnDb($request->all(), $id);
+
+            return redirect('arsip');
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
+
+    public function validateArsipInfo($data) {
+        return Validator::make($data, [
+            "jenis_dokumen" => ['unique', 'max:255'],
+            "kode_dokumen" => ['unique', 'max:255'],
+            "keterangan" => ['unique', 'max:500']
+        ]); 
+    }
+
+    public function updateArsipInfoOnDb($data, $id) {
+        $arsip = $this->fetchArsipInstanceById($id);
 
         $arsip->jenis_dokumen = $data['jenis_dokumen'];
         $arsip->kode_dokumen = $data['kode_dokumen'];
@@ -194,30 +212,43 @@ class ArsipController extends Controller
         $arsip->save();
     }
 
+    public function updateFile(Request $request, $id) {
+        try {
+            $request->validate([
+                'file' => 'required|mimes:pdf,jpg,jpeg,png|max:2048'
+            ]);
+
+            $uploadFilePath = $this->uploadFile($request);
+
+            $request['file_name'] = $uploadFilePath;
+
+            $this->updateAripFileOnDb($request->all(), $id);
+
+            return redirect('arsip');
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
+
+    protected function updateAripFileOnDb(array $data, $id) {
+        $arsip = $this->fetchArsipInstanceById($id);
+
+        $arsip->file_name = $data['file_name'];
+
+        $arsip->save();
+    }
+
     protected function fetchArsipInstanceById($id) {
         return Arsip::where('id', $id)->get()[0];
     }
 
-    protected function filterArsipsFromGetVariable($collection) {
-        $isSearchQueryExists = isset($_GET['query']);
-        if($isSearchQueryExists) {
-            $searchQuery = '%'.$_GET['query']."%";
+    public function delete($id) {
+        $arsip = $this->fetchArsipInstanceById($id);
 
-            $collection->where('arsips.kode_dokumen', 'like', $searchQuery)
-                ->orWhere('jenis_dokumens.name', 'like', $searchQuery)
-                ->orWhere('owners.name', 'like', $searchQuery)
-                ->orWhere('owners.nik', 'like', $searchQuery)
-                ->orwhere('owners.name', 'like', $searchQuery);
-        }
+        Storage::delete($arsip->file_name);
 
-        $sortBy = isset($_GET['sortBy']) ? $_GET['sortBy'] : 'id';
-        $sortByOrder = isset($_GET['sortByOrder']) ? $_GET['sortByOrder'] : 'desc';
-        $collection->orderBy($sortBy, $sortByOrder);
+        $arsip->delete();
 
-        return $collection;
-    }
-
-    protected function paginate($collection) {
-        return $collection->paginate(1);
+        return redirect('arsip');
     }
 }
