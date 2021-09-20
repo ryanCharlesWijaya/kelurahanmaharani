@@ -7,8 +7,19 @@
     @csrf
 
     <div class="form-group">
+        <label for="nomor_arsip">{{__('Nomor Arsip')}}</label>
+        <input type="text" class="form-control @error('nomor_arsip') is-invalid @enderror" id="nomor_arsip" name="nomor_arsip" placeholder="Nomor Arsip"  value="{{ old('nomor_arsip') }}">
+
+        @error('nomor_arsip')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
+    </div>
+    
+    <div class="form-group">
         <label for="nik">{{__('Nik')}}</label>
-        <input type="text" list="niks" class="form-control" id="nik" name="nik" placeholder="Nama Lengkap">
+        <input type="text" list="niks" class="form-control @error('nik') is-invalid @enderror" id="nik" name="nik" placeholder="Nik Pemilik"  value="{{ old('nik') }}">
         <datalist id="niks">
             @foreach ($owners as $owner)
                 <option class="option-{{ $owner['nik'] }}" value="{{ $owner['nik'] }}">{{ $owner['name'] }}</option>
@@ -24,7 +35,7 @@
 
     <div class="form-group">
         <label for="name">{{__('Nama Pemilik')}}</label>
-        <input type="text" class="form-control" id="name" name="name" placeholder="nama pemilik">
+        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="Nama Pemilik"  value="{{ old('name') }}">
         @error('name')
             <span class="invalid-feedback" role="alert">
                 <strong>{{ $message }}</strong>
@@ -34,7 +45,7 @@
 
     <div class="form-group">
         <label for="jenis_dokumen">{{__('Jenis Dokumen')}}</label>
-        <input type="text" list="jenis_jenis_dokumen" class="form-control" id="jenis_dokumen" name="jenis_dokumen" placeholder="Kode Dokumen">
+        <input type="text" list="jenis_jenis_dokumen" class="form-control @error('jenis_dokumen') is-invalid @enderror" id="jenis_dokumen" name="jenis_dokumen" placeholder="Kode Dokumen"  value="{{ old('jenis_dokumen') }}">
         <datalist id="jenis_jenis_dokumen">
             @foreach ($jenisJenisDokumen as $jenisDokumen)
                 <option class="option-{{ $jenisDokumen['id'] }}">{{ $jenisDokumen['name'] }}</option>
@@ -50,20 +61,9 @@
 
     <div class="form-group">
         <label for="kode_dokumen">{{__('Kode Dokumen')}}</label>
-        <input type="text" class="form-control" id="kode_dokumen" name="kode_dokumen" placeholder="Kode Dokumen">
+        <input type="text" class="form-control @error('kode_dokumen') is-invalid @enderror" id="kode_dokumen" name="kode_dokumen" placeholder="Kode Dokumen" value="{{ old('kode_dokumen') }}">
 
         @error('kode_dokumen')
-            <span class="invalid-feedback" role="alert">
-                <strong>{{ $message }}</strong>
-            </span>
-        @enderror
-    </div>
-
-    <div class="form-group">
-        <label for="keterangan">{{__('Keterangan')}}</label>
-        <input type="text" class="form-control" id="keterangan" name="keterangan" placeholder="Keterangan">
-
-        @error('keterangan')
             <span class="invalid-feedback" role="alert">
                 <strong>{{ $message }}</strong>
             </span>

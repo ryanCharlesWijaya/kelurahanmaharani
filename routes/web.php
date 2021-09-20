@@ -44,8 +44,20 @@ Route::name('user.')->group(function () {
     Route::get('/user/create', [App\Http\Controllers\UserController::class, 'create'])->name('create');
 
 	Route::get('/user/{id}/edit', [App\Http\Controllers\UserController::class, 'edit'])->name('edit');
-	Route::post('/user/info/{id}', [App\Http\Controllers\UserController::class, 'updateInfo'])->name('updateInfo');
-	Route::post('/user/password/{id}', [App\Http\Controllers\UserController::class, 'updatePassword'])->name('updatePassword');
+	Route::post('/user/{id}/update/info', [App\Http\Controllers\UserController::class, 'updateInfo'])->name('updateInfo');
+	Route::post('/user/{id}/update/password', [App\Http\Controllers\UserController::class, 'updatePassword'])->name('updatePassword');
 	
 	Route::post('/user/delete/{id}', [App\Http\Controllers\UserController::class, 'delete'])->name('delete');
+});
+
+Route::name('question.')->group(function () {
+    Route::get('/question', [App\Http\Controllers\QuestionController::class, 'index'])->name('index');
+
+    Route::get('/question/create', [App\Http\Controllers\QuestionController::class, 'create'])->name('create');
+	Route::post('/question', [App\Http\Controllers\QuestionController::class, 'store'])->name('store');
+
+	Route::get('/question/{id}/edit', [App\Http\Controllers\QuestionController::class, 'edit'])->name('edit');
+	Route::post('/question/{id}/update', [App\Http\Controllers\QuestionController::class, 'update'])->name('update');
+
+	Route::post('/question/delete/{id}', [App\Http\Controllers\QuestionController::class, 'delete'])->name('delete');
 });

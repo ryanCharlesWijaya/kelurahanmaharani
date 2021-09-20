@@ -14,7 +14,7 @@ class Arsip extends Model
         'owner_nik',
         'kode_dokumen',
         'jenis_dokumen',
-        'keterangan',
+        'nomor_arsip',
         'file_name',
     ];
 

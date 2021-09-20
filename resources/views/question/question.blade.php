@@ -1,7 +1,7 @@
 @extends('layouts.nav')
 
 @section('container')
-<h1 class="pt-3">Arsip</h1>
+<h1 class="pt-3">Q&A</h1>
 <form class="form-select" id="form">
   <div class="row" id="search">
     <div class="col-md-2" style="padding-left:0;">
@@ -13,10 +13,10 @@
     <div class="col">
       <input type="text" name="query" class="form-control" value="{{ isset($_GET['query']) ? $_GET['query'] : null }}" placeholder="Cari Dokumen...">
     </div>
-      <input id="arsip-search-button" type="submit" value="Cari" class="btn btn-success">
+      <input id="question-search-button" type="submit" value="Cari" class="btn btn-success">
   </div>
 </form>
-<a id="addData" href="{{route('arsip.create')}}" class="btn btn-success mb-3 mt-3">Tambah File</a>
+<a id="addData" href="{{route('question.create')}}" class="btn btn-success mb-3 mt-3">Tambah Pertanyaan</a>
 <div class="table-wrapper">
 <table class="table table-bordered " id="arsip-table" style="text-align:center">
     <thead>
@@ -53,16 +53,13 @@
         @endforeach
     </thead>
     <tbody class="text-dark" style="text-align:center">
-        @foreach($arsips as $arsip)
+        @foreach($questions as $question)
         <tr>
             <td class="py-1 pl-0 pr-0">
-                <a class="btn m-0 p-0" target="_blank" href="{{ asset('storage/'.$arsip->file_name) }}">
-                    <svg version="1.1" class="table-svg" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><g><path d="M435.174,382.964c25.042-35.155,21.986-84.07-9.541-115.597c-33.803-33.803-93.51-33.816-127.266,0c-35.193,35.162-35.175,92.122,0,127.266c31.531,31.556,80.458,34.567,115.596,9.542l76.826,75.036L512,458L435.174,382.964z"/></g></g><g><g><polygon points="272,8.789 272,121 383.211,121      "/></g></g><g><g><path d="M361.985,451.015c-32.051,0-62.183-12.495-84.844-35.186c-46.915-46.855-46.926-122.794,0.029-169.688c26.755-26.81,69.164-41.373,114.829-30.018V151H242V0H0v512h392v-65.235C382.268,449.274,372.302,451.015,361.985,451.015zM60,181h212v30H60V181z M212,391H60v-30h152V391z M212,331H60v-30h152V331z M212,271H60v-30h152V271z"/></g></g></svg>
-                </a>
-                <a title="update" href="{{ route('arsip.edit', ['id' => $arsip->id]) }}" class="btn m-0 p-0">
+                <a title="update" href="{{ route('question.edit', ['id' => $question->id]) }}" class="btn m-0 p-0">
                     <svg  viewBox="0 0 492.49284 492" class="table-svg"  xmlns="http://www.w3.org/2000/svg"><path d="m304.140625 82.472656-270.976563 270.996094c-1.363281 1.367188-2.347656 3.09375-2.816406 4.949219l-30.035156 120.554687c-.898438 3.628906.167969 7.488282 2.816406 10.136719 2.003906 2.003906 4.734375 3.113281 7.527344 3.113281.855469 0 1.730469-.105468 2.582031-.320312l120.554688-30.039063c1.878906-.46875 3.585937-1.449219 4.949219-2.8125l271-270.976562zm0 0"/><path d="m476.875 45.523438-30.164062-30.164063c-20.160157-20.160156-55.296876-20.140625-75.433594 0l-36.949219 36.949219 105.597656 105.597656 36.949219-36.949219c10.070312-10.066406 15.617188-23.464843 15.617188-37.714843s-5.546876-27.648438-15.617188-37.71875zm0 0"/></svg>
                 </a>
-                <form title="delete" method="POST" action="{{ route('arsip.delete', ['id' => $arsip->id]) }}" class="btn m-0 p-0">
+                <form title="delete" method="POST" action="{{ route('question.delete', ['id' => $question->id]) }}" class="btn m-0 p-0">
                     @csrf
                     <button type="submit" style="background: transparent; border: none; padding: 0; margin: 0;">
                         <svg version="1.1" class="table-svg" id="Capa_1"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -84,18 +81,15 @@
                     </button>
                 </form>
             </td>
-            <td class="py-1">{{ $arsip->nomor_arsip }}</td>
-            <td class="py-1">{{ $arsip->kode_dokumen }}</td>
-            <td class="py-1">{{ $arsip->owner_nik }}</td>
-            <td class="py-1">{{ $arsip->owner_name }}</td>
-            <td class="py-1">{{ $arsip->jenis_dokumen_name }}</td>
-            <td class="py-1">{{ $arsip->user_name }}</td>
-            <td class="py-1">{{ $arsip->created_at }}</td>
+            <td class="py-1">{{ $question->question }}</td>
+            <td class="py-1">{{ $question->answer }}</td>
+            <td class="py-1">{{ $question->created_at }}</td>
         </tr>
         @endforeach
     </tbody>
 </table>
 
-{{ $arsips->links("pagination::bootstrap-4") }}
+{{ $questions->links("pagination::bootstrap-4") }}
+
 </div>
 @endsection

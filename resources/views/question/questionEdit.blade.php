@@ -1,6 +1,42 @@
 @extends('layouts.nav')
 
 @section('container')
+
+<h1 style="padding-top:4%;">Edit Pertanyaan</h1>
+<form id="form-arsip" method="POST" action="{{ route('question.update', ['id' => $question->id]) }}" enctype="multipart/form-data">
+    @csrf
+    <div class="form-group">
+        <label for="question">{{__('Pertanyaan')}}</label>
+        <textarea class="form-control" id="question" rows="3" name="question" placeholder="Pertanyaan">{{ $question->question }}</textarea> 
+
+        @error('answer')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
+    </div>
+
+    <div class="form-group">
+        <label for="answer">{{__('Jawaban')}}</label>
+        <textarea class="form-control" id="answer" rows="3" name="answer" placeholder="Jawaban">{{ $question->answer }}</textarea> 
+
+        @error('answer')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
+    </div>
+
+    <button type="submit" class="btn btn-success">Update</button>
+</form>
+
+<script type="text/javascript" src="{{ asset('js/arsipAdd.js') }}"></script>
+@endsection
+
+
+{{-- @extends('layouts.nav')
+
+@section('container')
 <style>
     
 </style>
@@ -63,6 +99,6 @@
     <div class="button-group">
         <button type="submit" class="btn btn-success mb-4">Simpan Perubahan File</button>
     </div>
-</form>
+</form> --}}
     
-@endsection
+{{-- @endsection --}}

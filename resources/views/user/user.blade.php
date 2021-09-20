@@ -4,7 +4,7 @@
 <div class="user-title-wrapper">
     <h1>User</h1>
 </div>
-<a id="addUser" href="tambahData" class="btn btn-success mb-3">Tambah User</a>
+<a id="addUser" href="{{ route('user.create') }}" class="btn btn-success mb-3">Tambah User</a>
 <div class="table-wrapper">
     <table class="table table-bordered w-50" id="arsip-table" style="text-align:center">
         <thead>

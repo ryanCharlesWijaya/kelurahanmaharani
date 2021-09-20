@@ -15,16 +15,7 @@ use App\Models\JenisDokumen;
 
 class ArsipController extends Controller
 {
-    private $tableHeaderArray = [
-        'Kode Dokumen' => 'kode_dokumen',
-        'Nik Pemilik' => 'owner_nik',
-        'Pemilik' => 'owner_name',
-        'Jenis Dokumen' => 'jenis_dokumen_name',
-        'Keterangan' => 'keterangan',
-        'Admin' => 'user_name',
-        'Tanggal Dibuat' => 'id',
-    ];
-
+    
     public function __construct() {
         $this->middleware('auth');
     }
@@ -48,22 +39,9 @@ class ArsipController extends Controller
         ]);
     }
 
-    protected function assigningUrlForTableHeader() {
-        foreach ($this->tableHeaderArray as $key => $value) {
-            $isSortByIsBeingUsed = (isset($_GET['sortBy']) && $_GET['sortBy'] == $value); 
-            $sortByOrder = (isset($_GET['sortByOrder']) && $isSortByIsBeingUsed && $_GET['sortByOrder'] == 'desc') ? 'asc' : 'desc'; 
-
-            $this->tableHeaderArray[$key] = [
-                'name' => $key,
-                'attribute' => $value,
-                'orderBy' => $sortByOrder
-            ];
-        }
-    }
-
     protected function filterArsipsFromGetVariable($collection) {
-        $isFromDataExists = isset($_GET['fromDate']);
-        $isUntilDataExists = isset($_GET['untilDate']);
+        $isFromDataExists = isset($_GET['fromDate']) && !empty($_GET['fromDate']);
+        $isUntilDataExists = isset($_GET['untilDate']) && !empty($_GET['untilDate']);
 
         if ($isFromDataExists && $isUntilDataExists) {
             $collection->whereBetween("arsips.created_at", [$_GET['fromDate']." 00:00:00", $_GET['untilDate']." 23:59:59"]);
@@ -90,7 +68,7 @@ class ArsipController extends Controller
     }
 
     protected function paginate($collection) {
-        return $collection->paginate(1);
+        return $collection->paginate(30);
     }
 
     public function create() {
@@ -122,7 +100,7 @@ class ArsipController extends Controller
             $request['file_name'] = $uploadFilePath;
             $request['user_id'] = Auth::id();
 
-            $this->ArsipValidator($request->all());
+            $this->ArsipValidator($request->all())->validate();
 
             $this->storeToDb($request->all());
 
@@ -133,6 +111,10 @@ class ArsipController extends Controller
     }
 
     protected function uploadFile($request) {
+        $request->validate([
+            'file' => 'required|mimes:pdf,jpg,jpeg,png|max:2048',
+        ]);
+
         $isUploaded = $request->file('file')->store('docs');
 
         if (empty($isUploaded)) throw new Exception("Error Uploading File", 1);
@@ -142,22 +124,22 @@ class ArsipController extends Controller
 
     protected function ArsipValidator(array $data) {
         return Validator::make($data, [
+            'nomor_arsip' => ['required', 'string', 'unique:arsips', 'max:100'],
             'user_id' => ['required', 'max:255'],
             'nik' => ['required', 'string', 'max:255'],
             'jenis_dokumen' => ['required', 'int'],
-            'kode_dokumen' => ['required', 'string', 'max:255'],
-            'keterangan' => ['string', 'max:1000'],
+            'kode_dokumen' => ['required', 'string', 'unique:arsips', 'max:255'],
             'file_name' => ['required', 'string', 'max:255']
         ]);
     }
 
     protected function storeToDb(array $data) {
         return Arsip::create([
+            'nomor_arsip' => $data['nomor_arsip'],
             'user_id' => $data['user_id'],
             'owner_nik' => $data['nik'],
             'jenis_dokumen' => $data['jenis_dokumen'],
             'kode_dokumen' => $data['kode_dokumen'],
-            'keterangan' => $data['keterangan'],
             'file_name' => $data['file_name']
         ]);
     }
@@ -198,7 +180,7 @@ class ArsipController extends Controller
         return Validator::make($data, [
             "jenis_dokumen" => ['unique', 'max:255'],
             "kode_dokumen" => ['unique', 'max:255'],
-            "keterangan" => ['unique', 'max:500']
+            "nomor_arsip" => ['unique', 'max:500']
         ]); 
     }
 
@@ -207,17 +189,13 @@ class ArsipController extends Controller
 
         $arsip->jenis_dokumen = $data['jenis_dokumen'];
         $arsip->kode_dokumen = $data['kode_dokumen'];
-        $arsip->keterangan = $data['keterangan'];
+        $arsip->nomor_arsip = $data['nomor_arsip'];
 
         $arsip->save();
     }
 
     public function updateFile(Request $request, $id) {
         try {
-            $request->validate([
-                'file' => 'required|mimes:pdf,jpg,jpeg,png|max:2048'
-            ]);
-
             $uploadFilePath = $this->uploadFile($request);
 
             $request['file_name'] = $uploadFilePath;
