@@ -22,84 +22,7 @@
 
   <style>
     /* Style the Image Used to Trigger the Modal */
-#myImg {
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s;
-}
 
-#myImg:hover {opacity: 0.7;}
-
-/* The Modal (background) */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
-}
-
-/* Modal Content (Image) */
-.modal-content {
-  margin: auto;
-  display: block;
-  width: 80%;
-  max-width: 700px;
-}
-
-/* Caption of Modal Image (Image Text) - Same Width as the Image */
-#caption {
-  margin: auto;
-  display: block;
-  width: 80%;
-  max-width: 700px;
-  text-align: center;
-  color: #ccc;
-  padding: 10px 0;
-  height: 150px;
-}
-
-/* Add Animation - Zoom in the Modal */
-.modal-content, #caption {
-  animation-name: zoom;
-  animation-duration: 0.6s;
-}
-
-@keyframes zoom {
-  from {transform:scale(0)}
-  to {transform:scale(1)}
-}
-
-/* The Close Button */
-.close {
-  position: absolute;
-  top: 15px;
-  right: 35px;
-  color: #f1f1f1;
-  font-size: 40px;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-.close:hover,
-.close:focus {
-  color: #bbb;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-/* 100% Image Width on Smaller Screens */
-@media only screen and (max-width: 700px){
-  .modal-content {
-    width: 100%;
-  }
-}
   </style>
   <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
@@ -219,29 +142,22 @@
   </header><!-- End Header -->
 
   <!-- ======= Hero Section ======= -->
-  <section id="hero" class="d-flex align-items-center">
+  <section id="hero" class="d-flex" style="padding-bottom: 0;">
 
-    <div class="container-fluid" data-aos="zoom-out" data-aos-delay="100">
-      <div class="row justify-content-center">
-        <div class="col-xl-10">
-          <div class="row">
-            <div class="col-xl-5">
-              <h1>Selamat Datang di</h1>
-              <h2>Portal Resmi Kelurahan Maharani</h2>
-              <a href="#about" class="btn-get-started scrollto">Mulai</a>
-            </div>
-            
-          </div>
-          <div class="col-xl-12 h-100">
-              <div class="row h-100">
-                <div class="col-md-3 h-100" id="logo2-wrapper">
-                  <img class="" id="logo2" src="/image/logo.png" alt="">
-                </div>
-                <img class="col-md-3 position-absolute" style="right: 0;" id="hero-image" src="/image/camat&lurah.png" alt="" srcset="">
-              </div>
-            </div>
+    <div class="container" id="hero-content">
+      <div class="hero-content-1"></div>
+      <div class="hero-content-2">
+        <h1>Selamat datang</h1>
+        <h2>Di Portal Resmi Kelurahan Maharani</h2>
+        <a class="btn btn-get-started scrollto" href="#about">lorem</a>
+      </div>
+      <div class="hero-content-3">
+        <div class="hero-logo">
+          <img src="/image/logo.png" alt="" srcset="">
         </div>
-          
+        <div class="hero-image">
+          <img src="/image/camat&lurah2.png" alt="" srcset="">
+        </div>
       </div>
     </div>
     
